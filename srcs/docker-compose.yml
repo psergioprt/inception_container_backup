@@ -1,37 +1,66 @@
 services:
   nginx:
+    image: nginx:v1.0
     build: requirements/nginx/.
     container_name: nginx
     ports:
       - "443:443"
     restart: unless-stopped
+    depends_on:
+      - wordpress
     networks:
       - inception-network
     volumes:
-      - ./.web:/var/www/html
+      - v_web:/var/www/html
 
   wordpress:
+    image: wordpress:v1.0
     build: requirements/wordpress/.
     container_name: wordpress
+    restart: unless-stopped
+    depends_on:
+      - mariadb
     networks:
       - inception-network
+    expose:
+      - "9000"
     volumes:
-      - ./.web:/var/www/html
+      - v_web:/var/www/html
 
   mariadb:
+    image: mariadb:v1.0
     build: requirements/mariadb/.
     container_name: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+    restart: unless-stopped
+#    environment:
+#      MYSQL_ROOT_PASSWORD: rootpassword
     networks:
       - inception-network
+    expose:
+      - "3306"
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - v_db:/var/lib/mysql
+ #     - mariadb_data:/var/lib/mysql
       - ./requirements/mariadb/50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
+
+volumes:
+  v_web:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/pauldos-/data/wordpress
+
+  v_db:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/pauldos-/data/mariadb
 
 networks:
   inception-network:
     driver: bridge
 
-volumes:
-  mariadb_data:
+#volumes:
+#  mariadb_data:
