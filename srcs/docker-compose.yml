@@ -2,6 +2,16 @@ services:
   nginx:
     image: nginx:v1.0
     build: requirements/nginx/.
+    args:
+        - CRED_PATH
+        - CRED_CERT
+        - CRED_KEY
+        - COUNTRY
+        - STATE
+        - LOCALITY
+        - ORGANIZATION
+        - ORG_UNIT
+        - COMMON_NAME
     container_name: nginx
     ports:
       - "443:443"
@@ -26,23 +36,23 @@ services:
       - "9000"
     volumes:
       - v_web:/var/www/html
+    env_file:
+      - .env
 
   mariadb:
     image: mariadb:v1.0
     build: requirements/mariadb/.
     container_name: mariadb
     restart: unless-stopped
-#    environment:
-#      MYSQL_ROOT_PASSWORD: rootpassword
     networks:
       - inception-network
     expose:
       - "3306"
     volumes:
       - v_db:/var/lib/mysql
- #     - mariadb_data:/var/lib/mysql
       - ./requirements/mariadb/50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
-
+    env_file:
+      - .env
 volumes:
   v_web:
     driver: local
