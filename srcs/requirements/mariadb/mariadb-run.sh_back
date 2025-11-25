@@ -1,0 +1,47 @@
+version 1:
+#!/bin/bash
+
+set -e
+
+# Start MariaDB temporarily (local only)
+mysqld --skip-networking --socket=/run/mysqld/mysqld.sock &
+pid="$!"
+
+echo "Waiting for MariaDB to start..."
+until mysqladmin --socket=/run/mysqld/mysqld.sock ping &>/dev/null; do
+    sleep 1
+done
+
+# Create init.sql with environment variables
+echo "CREATE DATABASE IF NOT EXISTS $DB_NAME;" > /etc/mysql/init.sql
+echo "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';" >> /etc/mysql/init.sql
+echo "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD' WITH GRANT OPTION;" >> /etc/mysql/init.sql
+echo "FLUSH PRIVILEGES;" >> /etc/mysql/init.sql
+
+# Initialize database and user
+#echo "Configuring initial database..."
+#
+#mysql --socket=/run/mysqld/mysqld.sock <<EOF
+#CREATE DATABASE IF NOT EXISTS $DB_NAME;
+#CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';
+#GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';
+#FLUSH PRIVILEGES;
+#EOF
+
+# Stop temporary MariaDB
+kill "$pid"
+wait "$pid"
+
+# Launch MariaDB normally (with networking)
+exec mysqld
+
+version 2
+#!/bin/bash
+echo "CREATE DATABASE IF NOT EXISTS $DB_NAME;" > /etc/mysql/init.sql
+echo "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';" >> /etc/mysql/init.sql
+echo "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD' WITH GRANT OPTION;" >>>
+echo "FLUSH PRIVILEGES;" >> /etc/mysql/init.sql
+sleep 5
+mysql_install_db 
+mysqld
+
