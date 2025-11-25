@@ -3,7 +3,7 @@ FROM debian:bookworm
 RUN apt update \
 	&& apt upgrade -y \
 	&& apt install -y \
-		php8.2-fpm php8.2-mysqli curl vim nano \
+		php8.2-fpm php8.2-mysqli curl vim nano default-mysql-client \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Create /run/php directory and set permissions

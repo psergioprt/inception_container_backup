@@ -8,8 +8,8 @@ all: clean build up
 
 # Ensure persistent data directories exist
 data:
-	@if [ ! -d "/home/paulo/data/mariadb" ] && [ ! -d "/home/paulo/data/wordpress" ]; then \
-    		mkdir -p /home/paulo/data/mariadb && mkdir -p /home/paulo/data/wordpress; \
+	@if [ ! -d "/home/pauldos-/data/mariadb" ] && [ ! -d "/home/pauldos-/data/wordpress" ]; then \
+    		mkdir -p /home/pauldos-/data/mariadb && mkdir -p /home/pauldos-/data/wordpress; \
 	fi
 
 # Build Docker images (depends on data folders)
@@ -31,4 +31,3 @@ logs:
 # Remove all containers, networks, and volumes (optional cleanup)
 clean:
 	docker compose down -v --remove-orphans
-
