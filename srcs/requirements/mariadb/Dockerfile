@@ -7,13 +7,7 @@ RUN apt update && apt upgrade -y && apt install -y \
 RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
 # Copy modified config
-COPY 50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-
-# Copy init.sql
-#COPY init.sql /etc/mysql/init.sql
-
-#COPY mariadb_start.sh /mariadb_start.sh
-#RUN chmod +x /mariadb_start.sh
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
 COPY mariadb-run.sh /mariadb-run.sh
 RUN chmod +x /mariadb-run.sh
